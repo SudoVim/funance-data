@@ -5,6 +5,8 @@ name = "pypi"
 
 [packages]
 yfinance = "==0.2.*"
+python-dotenv = "==1.*"
+elasticsearch = "==8.*"
 
 [dev-packages]
 

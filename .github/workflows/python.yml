@@ -22,7 +22,7 @@ jobs:
     - name: Install Dependencies
       run: |
         pip install --user pipenv
-        pipenv install
+        pipenv install --dev
 
     - name: Check formatting
       run: pipenv run black . --check

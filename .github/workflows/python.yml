@@ -21,6 +21,7 @@ jobs:
 
     - name: Install Dependencies
       run: |
+        pip install --user pipenv
         pipenv install
 
     - name: Check formatting

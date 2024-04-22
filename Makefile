@@ -5,3 +5,7 @@ format:
 .PHONY: check
 check:
 	pipenv run black . --check
+
+.PHONY: test
+test:
+	pipenv run pytest

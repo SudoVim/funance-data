@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, call
 
 import elasticsearch
 
@@ -17,41 +17,35 @@ class TestCreateNewClient(unittest.TestCase):
         )
 
 
-@patch("os.getenv")
+@patch("funance_data.client.config")
 @patch("funance_data.client.create_new_client")
 class TestGetClient(unittest.TestCase):
     def tearDown(self) -> None:
         app_local.__delattr__("global_elastic_client")
 
-    def test_default(
-        self, mock_create_new_client: MagicMock, mock_getenv: MagicMock
+    def test_create(
+        self, mock_create_new_client: MagicMock, mock_config: MagicMock
     ) -> None:
-        mock_getenv.return_value = ""
-
-        cmp_client = get_client()
-        self.assertIsNotNone(cmp_client)
-
-        mock_create_new_client.assert_called_once_with(
-            "http://localhost:9200", "elastic", ""
-        )
-
-    def test_with_configured(
-        self, mock_create_new_client: MagicMock, mock_getenv: MagicMock
-    ) -> None:
-        env = {
-            "ELASTICSEARCH_URL": "my-host",
-            "ELASTICSEARCH_USERNAME": "my-user",
-            "ELASTICSEARCH_PASSWORD": "my-pass",
-        }
-        mock_getenv.side_effect = env.get
+        mock_config.side_effect = [
+            "my-host",
+            "my-user",
+            "my-pass",
+        ]
 
         cmp_client = get_client()
         self.assertIsNotNone(cmp_client)
 
         mock_create_new_client.assert_called_once_with("my-host", "my-user", "my-pass")
+        mock_config.assert_has_calls(
+            [
+                call("elasticsearch.url"),
+                call("elasticsearch.username"),
+                call("elasticsearch.password"),
+            ]
+        )
 
     def test_already_created(
-        self, mock_create_new_client: MagicMock, mock_getenv: MagicMock
+        self, mock_create_new_client: MagicMock, mock_config: MagicMock
     ) -> None:
         app_local.global_elastic_client = MagicMock(spec=elasticsearch.Elasticsearch)
 
@@ -59,4 +53,4 @@ class TestGetClient(unittest.TestCase):
         self.assertIsNotNone(cmp_client)
 
         mock_create_new_client.assert_not_called()
-        mock_getenv.assert_not_called()
+        mock_config.assert_not_called()

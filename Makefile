@@ -4,7 +4,7 @@ format:
 
 .PHONY: check
 check:
-	pipenv run black . --check
+	pipenv run mypy .
 
 .PHONY: test
 test:

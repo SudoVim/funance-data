@@ -1,9 +1,7 @@
-import os
 import threading
 import elasticsearch
-from dotenv import load_dotenv
 
-load_dotenv()
+from funance_data.config import config
 
 app_local = threading.local()
 
@@ -27,9 +25,9 @@ def get_client():
     """
     if not hasattr(app_local, "global_elastic_client"):
         app_local.global_elastic_client = create_new_client(
-            os.getenv("ELASTICSEARCH_URL") or "http://localhost:9200",
-            os.getenv("ELASTICSEARCH_USERNAME") or "elastic",
-            os.getenv("ELASTICSEARCH_PASSWORD") or "",
+            config("elasticsearch.url"),
+            config("elasticsearch.username"),
+            config("elasticsearch.password"),
         )
 
     return app_local.global_elastic_client

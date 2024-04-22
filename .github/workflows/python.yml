@@ -27,5 +27,8 @@ jobs:
     - name: Check formatting
       run: pipenv run black . --check
 
+    - name: Check static typing
+      run: pipenv run mypy .
+
     - name: Run tests
       run: pipenv run pytest

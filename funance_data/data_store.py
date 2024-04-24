@@ -1,11 +1,22 @@
-from typing import Optional
+from typing import Any, Generic, Optional, TypeVar
+from elastic_transport import ObjectApiResponse
 import elasticsearch
 
 from funance_data.client import get_client
 from funance_data.config import config
+from funance_data.document import Document
+
+T = TypeVar("T", bound=Document)
 
 
-class DataStore:
+class IndexResponse(Generic[T]):
+    response: ObjectApiResponse[Any]
+
+    def __init__(self, response: ObjectApiResponse[Any]) -> None:
+        self.response = response
+
+
+class DataStore(Generic[T]):
     """
     This ``DataStore`` class provides a common interface into functionality
     related to accessing data from the underlying elasticsearch store.
@@ -69,3 +80,12 @@ class DataStore:
                 index=index_name,
                 body=self.index_spec,
             )
+
+    def index(self, _id: str, document: T) -> IndexResponse[T]:
+        """
+        Index the given ``document`` at the given ``_id``.
+        """
+        index_name = self.get_index_name()
+        rsp = self.client.index(index=index_name, id=_id, document=document.encode())
+
+        return IndexResponse[T](rsp)

@@ -1,3 +1,7 @@
+.PHONY: run
+run:
+	docker-compose up
+
 .PHONY: format
 format:
 	pipenv run black .

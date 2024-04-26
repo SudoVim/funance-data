@@ -1,4 +1,4 @@
-from typing import Any, Callable, Generic, Mapping, Optional, TypeVar, get_args
+from typing import Any, Generic, Optional
 
 from elastic_transport import ObjectApiResponse
 

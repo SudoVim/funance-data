@@ -1,24 +1,15 @@
-from typing import Any, Generic, Optional, TypeVar
-from elastic_transport import ObjectApiResponse
+from typing import Any, Generic, Optional
 import elasticsearch
 
 from funance_data.client import get_client
 from funance_data.config import config
-from funance_data.document import Document
-
-T = TypeVar("T", bound=Document)
-
-
-class IndexResponse(Generic[T]):
-    response: ObjectApiResponse[Any]
-
-    def __init__(self, response: ObjectApiResponse[Any]) -> None:
-        self.response = response
+from funance_data.store.document import D
+from funance_data.store.response import IndexResponse, SearchResponse
 
 
-class DataStore(Generic[T]):
+class Store(Generic[D]):
     """
-    This ``DataStore`` class provides a common interface into functionality
+    This ``Store`` class provides a common interface into functionality
     related to accessing data from the underlying elasticsearch store.
 
     .. autoattribute:: name
@@ -46,15 +37,19 @@ class DataStore(Generic[T]):
     #: underlying client object to use
     client: elasticsearch.Elasticsearch
 
+    _document_class: type[D]
+
     def __init__(
         self,
         name: str,
+        document_class: type[D],
         query: Optional[dict] = None,
         sort: Optional[list] = None,
         index_spec: Optional[dict] = None,
         client: Optional[elasticsearch.Elasticsearch] = None,
     ):
         self.name = name
+        self._document_class = document_class
         self.query = query
         self.sort = sort
         self.index_spec = index_spec
@@ -65,6 +60,7 @@ class DataStore(Generic[T]):
         Get and return the name of this index.
         """
         prefix = config("elasticsearch.index_prefix") or ""
+
         return f"{prefix}{self.name}"
 
     def create_index(self) -> None:
@@ -81,11 +77,32 @@ class DataStore(Generic[T]):
                 body=self.index_spec,
             )
 
-    def index(self, _id: str, document: T) -> IndexResponse[T]:
+    def index(self, _id: str, document: D) -> IndexResponse[D]:
         """
         Index the given ``document`` at the given ``_id``.
         """
         index_name = self.get_index_name()
         rsp = self.client.index(index=index_name, id=_id, document=document.encode())
 
-        return IndexResponse[T](rsp)
+        return IndexResponse[D](rsp)
+
+    def search(self, size: int = 10000) -> SearchResponse[D]:
+        """
+        Search entries
+        """
+        body = {}  # type: dict[str, Any]
+
+        if self.query:
+            body["query"] = self.query
+
+        if self.sort:
+            body["sort"] = self.sort
+
+        index_name = self.get_index_name()
+        rsp = self.client.search(
+            index=index_name,
+            body=body,
+            size=size,
+        )
+
+        return SearchResponse[D](rsp, self._document_class)

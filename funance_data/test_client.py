@@ -13,7 +13,7 @@ class TestCreateNewClient(unittest.TestCase):
         self.assertIsNotNone(cmp_client)
 
         mock_elasticsearch.assert_called_once_with(
-            ["my-host"], http_auth=("my-user", "my-pass")
+            ["my-host"], basic_auth=("my-user", "my-pass")
         )
 
 

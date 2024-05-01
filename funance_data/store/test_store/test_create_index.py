@@ -17,7 +17,7 @@ class TestCreateIndex(StoreTestCase):
         self.mock_client.indices.put_mapping.assert_not_called()
 
     def test_with_spec(self) -> None:
-        self.store.index_spec = {"my": "spec"}
+        self.store._index_spec = {"my": "spec"}
         self.mock_client.indices.exists.return_value = True
         self.store.create_index()
         self.mock_client.indices.exists.assert_called_once_with(index="my-store")

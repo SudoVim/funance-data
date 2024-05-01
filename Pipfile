@@ -7,6 +7,7 @@ name = "pypi"
 yfinance = ">=0.2.38,<0.3"
 python-dotenv = ">=1.0.1,<2"
 elasticsearch = ">=8.13.0,<9"
+pytz = ">=2024.1,<2025"
 
 [dev-packages]
 black = ">=24.4.0,<25"

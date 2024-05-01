@@ -17,12 +17,8 @@ class Document:
     #: The raw underlying data
     data: Mapping[str, Any]
 
-    #: The document source
-    source: Mapping[str, Any]
-
     def __init__(self, data: Mapping[str, Any]) -> None:
         self.data = data
-        self.source = self.data.get("_source", {})
 
     def encode(self) -> Mapping[str, Any]:
         """

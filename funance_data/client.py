@@ -12,7 +12,7 @@ def create_new_client(hostname: str, username: str, password: str):
     """
     return elasticsearch.Elasticsearch(
         [hostname],
-        http_auth=(
+        basic_auth=(
             username,
             password,
         ),

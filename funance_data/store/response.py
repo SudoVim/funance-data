@@ -50,7 +50,7 @@ class SearchResponse(Response[D]):
             return self._hits
 
         self._hits = [
-            self._document_class.decode(h)
+            self._document_class.decode(h.get("_source", {}))
             for h in self.data.get("hits", {}).get("hits", [])
         ]
 

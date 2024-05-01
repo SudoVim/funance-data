@@ -27,7 +27,7 @@ class TestSearch(StoreTestCase):
         )
 
     def test_query(self) -> None:
-        self.store.query = {"my": "query"}
+        self.store._query = {"my": "query"}
         cmp_rsp = self.store.search()
         self.assertEqual(SearchResponse, type(cmp_rsp))
         self.assertEqual(self.mock_client.search.return_value, cmp_rsp.data)
@@ -41,7 +41,7 @@ class TestSearch(StoreTestCase):
         )
 
     def test_sort(self) -> None:
-        self.store.sort = [{"my": "sort"}]
+        self.store._sort = [{"my": "sort"}]
         cmp_rsp = self.store.search()
         self.assertEqual(SearchResponse, type(cmp_rsp))
         self.assertEqual(self.mock_client.search.return_value, cmp_rsp.data)

@@ -42,9 +42,24 @@ class TestSearchResponse(unittest.TestCase):
         self.assertEqual([], cmp_hits)
         data.get.assert_called_once_with("hits", {})
 
-    def test_hits(self) -> None:
+    def test_hits_no_source(self) -> None:
         data = MagicMock()
         data.get.return_value = {"hits": [{"my-key": "my-val"}]}
+
+        rsp = SearchResponse[DocumentSubClass](data, DocumentSubClass)
+
+        cmp_hits = rsp.hits
+
+        self.assertEqual(1, len(cmp_hits))
+        cmp_hit = cmp_hits[0]
+        self.assertEqual(DocumentSubClass, type(cmp_hit))
+        self.assertEqual({}, cmp_hit.data)
+
+        data.get.assert_called_once_with("hits", {})
+
+    def test_hits(self) -> None:
+        data = MagicMock()
+        data.get.return_value = {"hits": [{"_source": {"my-key": "my-val"}}]}
 
         rsp = SearchResponse[DocumentSubClass](data, DocumentSubClass)
 

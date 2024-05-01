@@ -13,26 +13,25 @@ class Store(Generic[D]):
     related to accessing data from the underlying elasticsearch store.
 
     .. autoattribute:: name
-    .. autoattribute:: query
-    .. autoattribute:: sort
-    .. autoattribute:: index_spec
     .. autoattribute:: client
 
     .. automethod:: get_index_name
     .. automethod:: create_index
+    .. automethod:: index
+    .. automethod:: search
     """
 
     #: name of the index representing this data store
     name: str
 
     #: how to query the configured data store for subclasses of this class
-    query: Optional[dict]
+    _query: Optional[dict]
 
     #: how to sort this data store
-    sort: Optional[list]
+    _sort: Optional[list]
 
     #: spec for indexing this data store
-    index_spec: Optional[dict]
+    _index_spec: Optional[dict]
 
     #: underlying client object to use
     client: elasticsearch.Elasticsearch
@@ -50,9 +49,9 @@ class Store(Generic[D]):
     ):
         self.name = name
         self._document_class = document_class
-        self.query = query
-        self.sort = sort
-        self.index_spec = index_spec
+        self._query = query
+        self._sort = sort
+        self._index_spec = index_spec
         self.client = client or get_client()
 
     def get_index_name(self) -> str:
@@ -71,10 +70,10 @@ class Store(Generic[D]):
         if not self.client.indices.exists(index=index_name):
             self.client.indices.create(index=index_name)
 
-        if self.index_spec:
+        if self._index_spec:
             self.client.indices.put_mapping(
                 index=index_name,
-                body=self.index_spec,
+                body=self._index_spec,
             )
 
     def index(self, _id: str, document: D) -> IndexResponse[D]:
@@ -92,11 +91,11 @@ class Store(Generic[D]):
         """
         body = {}  # type: dict[str, Any]
 
-        if self.query:
-            body["query"] = self.query
+        if self._query:
+            body["query"] = self._query
 
-        if self.sort:
-            body["sort"] = self.sort
+        if self._sort:
+            body["sort"] = self._sort
 
         index_name = self.get_index_name()
         rsp = self.client.search(

@@ -18,8 +18,8 @@ class TestStreamUpdate(StoreTestCase):
         self.store.stream_update(
             [
                 ("my-id", Document.decode({"my-key": "my-val"})),
-            ].__iter__()
-        )  # type: ignore
+            ].__iter__()  # type: ignore
+        )
 
         mock_helpers.streaming_bulk.assert_called()
         cmp_client, cmp_bulk_upload = mock_helpers.streaming_bulk.mock_calls[0].args

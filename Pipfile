@@ -6,13 +6,15 @@ name = "pypi"
 [packages]
 yfinance = ">=0.2.38,<0.3"
 python-dotenv = ">=1.0.1,<2"
-elasticsearch = ">=8.13.0,<9"
+elasticsearch = "*"
 pytz = ">=2024.1,<2025"
+dateparser = ">=1.2.0,<2"
 
 [dev-packages]
 black = ">=24.4.0,<25"
 pytest = ">=8.1.1,<9"
 mypy = ">=1.9.0,<2"
+types-dateparser = ">=1.2.0.20240420,<2"
 
 [requires]
 python_version = "3.10"

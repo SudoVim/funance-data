@@ -1,5 +1,6 @@
-from typing import Any, Generic, Optional
+from typing import Any, Generic, Generator, Optional
 import elasticsearch
+import elasticsearch.helpers
 
 from funance_data.client import get_client
 from funance_data.config import config
@@ -19,6 +20,7 @@ class Store(Generic[D]):
     .. automethod:: create_index
     .. automethod:: index
     .. automethod:: search
+    .. automethod:: stream_update
     """
 
     #: name of the index representing this data store
@@ -105,3 +107,22 @@ class Store(Generic[D]):
         )
 
         return SearchResponse[D](rsp, self._document_class)
+
+    def stream_update(self, update: Generator[tuple[str, D], Any, None]) -> None:
+        """
+        Stream the given ``update`` to our elasticsearch client.
+        """
+        index_name = self.get_index_name()
+
+        def bulk_upload():
+            for _id, doc in update:
+                yield {
+                    "_op_type": "update",
+                    "_index": index_name,
+                    "_id": _id,
+                    "doc": doc.encode(),
+                    "doc_as_upsert": True,
+                }
+
+        for _ in elasticsearch.helpers.streaming_bulk(self.client, bulk_upload()):
+            pass

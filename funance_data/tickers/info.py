@@ -23,13 +23,13 @@ class TickerInfo(Document):
 
 class TickerInfoStore(Store[TickerInfo]):
     """
-    Store for storing and retrieving ticker symbols.
+    Store for storing and retrieving information about a ticker symbol.
     """
 
     symbol: str
     _ticker: yf.Ticker
 
-    def __init__(self, symbol: str):
+    def __init__(self, symbol: str) -> None:
         self.symbol = symbol
         self._ticker = yf.Ticker(symbol)
 

@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 
 from yfinance import Ticker
 
-from funance_data.ticker_info import TickerInfo, TickerInfoStore
+from funance_data.tickers.info import TickerInfo, TickerInfoStore
 
 
 class TestTickerInfo(TestCase):
@@ -133,7 +133,7 @@ class TestTickerInfoStore(TestCase):
             cmp_doc.encode(),
         )
 
-    @patch("funance_data.ticker_info.datetime.datetime")
+    @patch("funance_data.tickers.info.datetime.datetime")
     def test_query_latest_found(self, mock_datetime: MagicMock) -> None:
         mock_datetime.utcnow.return_value = self.today
         mock_datetime.strptime.return_value = self.today
@@ -161,7 +161,7 @@ class TestTickerInfoStore(TestCase):
         )
         self.mock_client.index.assert_not_called()
 
-    @patch("funance_data.ticker_info.datetime.datetime")
+    @patch("funance_data.tickers.info.datetime.datetime")
     def test_query_latest_found_outdated(self, mock_datetime: MagicMock) -> None:
         mock_datetime.utcnow.return_value = self.today
         mock_datetime.strptime.return_value = self.yesterday
@@ -199,7 +199,7 @@ class TestTickerInfoStore(TestCase):
             },
         )
 
-    @patch("funance_data.ticker_info.datetime.datetime")
+    @patch("funance_data.tickers.info.datetime.datetime")
     def test_query_latest_not_found(self, mock_datetime: MagicMock) -> None:
         mock_datetime.utcnow.return_value = self.today
         self.mock_client.search.return_value = {"hits": {"hits": []}}

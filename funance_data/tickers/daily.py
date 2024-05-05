@@ -15,6 +15,11 @@ class TickerDaily(Document):
     date: datetime.datetime
     symbol: str
 
+    open: float
+    high: float
+    low: float
+    close: float
+
     def __init__(self, data: Mapping[str, Any]) -> None:
         super().__init__(data)
 
@@ -23,6 +28,12 @@ class TickerDaily(Document):
 
         self.date = parsed_date
         self.symbol = data["symbol"]
+
+        doc = data.get("doc", {})
+        self.open = doc.get("Open", 0.0)
+        self.high = doc.get("High", 0.0)
+        self.low = doc.get("Low", 0.0)
+        self.close = doc.get("Close", 0.0)
 
 
 class TickerDailyStore(Store[TickerDaily]):

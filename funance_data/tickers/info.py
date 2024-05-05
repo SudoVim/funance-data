@@ -13,12 +13,20 @@ class TickerInfo(Document):
 
     date: datetime.datetime
     symbol: str
+    long_name: str
+    short_name: str
+    dividend_yield: float
 
     def __init__(self, data: Mapping[str, Any]) -> None:
         super().__init__(data)
 
         self.date = datetime.datetime.strptime(data["date"], "%Y-%m-%d")
         self.symbol = data["symbol"]
+
+        doc = data.get("doc", {})
+        self.dividend_yield = doc.get("yield") or doc.get("dividendYield") or 0.0
+        self.long_name = doc.get("longName") or ""
+        self.short_name = doc.get("shortName") or ""
 
 
 class TickerInfoStore(Store[TickerInfo]):

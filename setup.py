@@ -18,6 +18,8 @@ setup(
     author="SudoVim",
     packages=[
         "funance_data",
+        "funance_data.store",
+        "funance_data.tickers",
     ],
     package_data={
         "funance_data": ["py.typed"],

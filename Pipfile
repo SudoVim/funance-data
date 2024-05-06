@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 yfinance = ">=0.2.38,<0.3"
 python-dotenv = ">=1.0.1,<2"
-elasticsearch = "*"
+elasticsearch = ">=8.13.1,<9"
 pytz = ">=2024.1,<2025"
 dateparser = ">=1.2.0,<2"
 

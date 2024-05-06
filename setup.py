@@ -25,6 +25,13 @@ setup(
         "funance_data": ["py.typed"],
     },
     python_requires=">=3.10, <4",
+    install_requires=[
+        "yfinance>=0.2.38,<0.3",
+        "python-dotenv>=1.0.1,<2",
+        "elasticsearch>=8.13.1,<9",
+        "pytz>=2024.1,<2025",
+        "dateparser>=1.2.0,<2",
+    ],
     project_urls={
         "Bug Reports": "https://github.com/SudoVim/funance-data/issues",
         "Source": "https://github.com/SudoVim/funance-data",

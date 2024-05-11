@@ -44,12 +44,27 @@ class TickerDailyStore(Store[TickerDaily]):
     symbol: str
     _ticker: yfinance.Ticker
 
+    NAME = "ticker-daily"
+    SORT = [
+        {
+            "date": {
+                "order": "desc",
+            },
+        },
+    ]
+    INDEX_SPEC = {
+        "properties": {
+            "date": {
+                "type": "date",
+            },
+        },
+    }
+
     def __init__(self, symbol: str) -> None:
         self.symbol = symbol
         self._ticker = yfinance.Ticker(symbol)
 
         super().__init__(
-            "ticker-daily",
             TickerDaily,
             query={
                 "bool": {
@@ -63,20 +78,6 @@ class TickerDailyStore(Store[TickerDaily]):
                             },
                         },
                     ],
-                },
-            },
-            sort=[
-                {
-                    "date": {
-                        "order": "desc",
-                    },
-                },
-            ],
-            index_spec={
-                "properties": {
-                    "date": {
-                        "type": "date",
-                    },
                 },
             },
         )

@@ -34,6 +34,22 @@ class TickerInfoStore(Store[TickerInfo]):
     Store for storing and retrieving information about a ticker symbol.
     """
 
+    NAME = "ticker-info"
+    SORT = [
+        {
+            "date": {
+                "order": "desc",
+            },
+        },
+    ]
+    INDEX_SPEC = {
+        "properties": {
+            "date": {
+                "type": "date",
+            },
+        },
+    }
+
     symbol: str
     _ticker: yf.Ticker
 
@@ -42,7 +58,6 @@ class TickerInfoStore(Store[TickerInfo]):
         self._ticker = yf.Ticker(symbol)
 
         super().__init__(
-            "ticker-info",
             TickerInfo,
             query={
                 "bool": {
@@ -56,20 +71,6 @@ class TickerInfoStore(Store[TickerInfo]):
                             },
                         },
                     ],
-                },
-            },
-            sort=[
-                {
-                    "date": {
-                        "order": "desc",
-                    },
-                },
-            ],
-            index_spec={
-                "properties": {
-                    "date": {
-                        "type": "date",
-                    },
                 },
             },
         )
@@ -89,7 +90,7 @@ class TickerInfoStore(Store[TickerInfo]):
         Query the ticker information for today if it doesn't exist. ``force``
         overrides this and always queries the latest.
         """
-        today = datetime.datetime.utcnow()
+        today = datetime.datetime.now(datetime.timezone.utc)
 
         latest = self.latest()
         if latest is not None and not force:

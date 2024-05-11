@@ -56,10 +56,6 @@ class TestTickerInfoStore(TestCase):
             },
             self.store._query,
         )
-        self.assertEqual([{"date": {"order": "desc"}}], self.store._sort)
-        self.assertEqual(
-            {"properties": {"date": {"type": "date"}}}, self.store._index_spec
-        )
 
     def test_latest_not_found(self) -> None:
         self.mock_client.search.return_value = {"hits": {"hits": []}}
@@ -135,7 +131,7 @@ class TestTickerInfoStore(TestCase):
 
     @patch("funance_data.tickers.info.datetime.datetime")
     def test_query_latest_found(self, mock_datetime: MagicMock) -> None:
-        mock_datetime.utcnow.return_value = self.today
+        mock_datetime.now.return_value = self.today
         mock_datetime.strptime.return_value = self.today
         self.mock_client.search.return_value = {
             "hits": {
@@ -152,6 +148,9 @@ class TestTickerInfoStore(TestCase):
         cmp_doc = self.store.query()
         self.assertIsNotNone(cmp_doc)
         self.assertEqual(TickerInfo, type(cmp_doc))
+
+        mock_datetime.now.assert_called_once_with(datetime.timezone.utc)
+
         self.assertEqual(
             {
                 "date": "2024-04-30",
@@ -163,7 +162,7 @@ class TestTickerInfoStore(TestCase):
 
     @patch("funance_data.tickers.info.datetime.datetime")
     def test_query_latest_found_outdated(self, mock_datetime: MagicMock) -> None:
-        mock_datetime.utcnow.return_value = self.today
+        mock_datetime.now.return_value = self.today
         mock_datetime.strptime.return_value = self.yesterday
         self.mock_client.search.return_value = {
             "hits": {
@@ -180,6 +179,8 @@ class TestTickerInfoStore(TestCase):
         cmp_doc = self.store.query()
         self.assertIsNotNone(cmp_doc)
         self.assertEqual(TickerInfo, type(cmp_doc))
+
+        mock_datetime.now.assert_called_once_with(datetime.timezone.utc)
 
         self.assertEqual(
             {
@@ -201,11 +202,13 @@ class TestTickerInfoStore(TestCase):
 
     @patch("funance_data.tickers.info.datetime.datetime")
     def test_query_latest_not_found(self, mock_datetime: MagicMock) -> None:
-        mock_datetime.utcnow.return_value = self.today
+        mock_datetime.now.return_value = self.today
         self.mock_client.search.return_value = {"hits": {"hits": []}}
         cmp_doc = self.store.query()
         self.assertIsNotNone(cmp_doc)
         self.assertEqual(TickerInfo, type(cmp_doc))
+
+        mock_datetime.now.assert_called_once_with(datetime.timezone.utc)
 
         self.assertEqual(
             {

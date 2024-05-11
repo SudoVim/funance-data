@@ -13,7 +13,6 @@ class Store(Generic[D]):
     This ``Store`` class provides a common interface into functionality
     related to accessing data from the underlying elasticsearch store.
 
-    .. autoattribute:: name
     .. autoattribute:: client
 
     .. automethod:: get_index_name
@@ -23,17 +22,14 @@ class Store(Generic[D]):
     .. automethod:: stream_update
     """
 
-    #: name of the index representing this data store
-    name: str
+    NAME: Optional[str] = None
+
+    SORT: Optional[list] = None
+
+    INDEX_SPEC: Optional[dict] = None
 
     #: how to query the configured data store for subclasses of this class
     _query: Optional[dict]
-
-    #: how to sort this data store
-    _sort: Optional[list]
-
-    #: spec for indexing this data store
-    _index_spec: Optional[dict]
 
     #: underlying client object to use
     client: elasticsearch.Elasticsearch
@@ -42,40 +38,37 @@ class Store(Generic[D]):
 
     def __init__(
         self,
-        name: str,
         document_class: type[D],
         query: Optional[dict] = None,
-        sort: Optional[list] = None,
-        index_spec: Optional[dict] = None,
         client: Optional[elasticsearch.Elasticsearch] = None,
     ):
-        self.name = name
         self._document_class = document_class
         self._query = query
-        self._sort = sort
-        self._index_spec = index_spec
         self.client = client or get_client()
 
-    def get_index_name(self) -> str:
+    @classmethod
+    def get_index_name(cls) -> str:
         """
         Get and return the name of this index.
         """
         prefix = config("elasticsearch.index_prefix") or ""
 
-        return f"{prefix}{self.name}"
+        return f"{prefix}{cls.NAME}"
 
-    def create_index(self) -> None:
+    @classmethod
+    def create_index(cls, client: Optional[elasticsearch.Elasticsearch] = None) -> None:
         """
         Create the index, optionally with the configured spec.
         """
-        index_name = self.get_index_name()
-        if not self.client.indices.exists(index=index_name):
-            self.client.indices.create(index=index_name)
+        client = client or get_client()
+        index_name = cls.get_index_name()
+        if not client.indices.exists(index=index_name):  # type: ignore
+            client.indices.create(index=index_name)  # type: ignore
 
-        if self._index_spec:
-            self.client.indices.put_mapping(
+        if cls.INDEX_SPEC:
+            client.indices.put_mapping(  # type: ignore
                 index=index_name,
-                body=self._index_spec,
+                body=cls.INDEX_SPEC,
             )
 
     def index(self, _id: str, document: D) -> IndexResponse[D]:
@@ -96,8 +89,8 @@ class Store(Generic[D]):
         if self._query:
             body["query"] = self._query
 
-        if self._sort:
-            body["sort"] = self._sort
+        if self.SORT:
+            body["sort"] = self.SORT
 
         index_name = self.get_index_name()
         rsp = self.client.search(

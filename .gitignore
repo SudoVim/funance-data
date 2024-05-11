@@ -1,3 +1,4 @@
 .env
 run.py
 build/*
+funance_data.egg-info/*

@@ -9,6 +9,7 @@ python-dotenv = ">=1.0.1,<2"
 elasticsearch = ">=8.13.1,<9"
 pytz = ">=2024.1,<2025"
 dateparser = ">=1.2.0,<2"
+typing-extensions = ">=4.11.0,<5"
 
 [dev-packages]
 black = ">=24.4.0,<25"

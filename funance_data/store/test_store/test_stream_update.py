@@ -28,7 +28,7 @@ class TestStreamUpdate(StoreTestCase):
             [
                 {
                     "_id": "my-id",
-                    "_index": "my-store",
+                    "_index": self.store.get_index_name(),
                     "_op_type": "update",
                     "doc": {"my-key": "my-val"},
                     "doc_as_upsert": True,

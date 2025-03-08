@@ -10,7 +10,7 @@ class TestSearch(StoreTestCase):
         self.assertEqual(self.mock_client.search.return_value, cmp_rsp.data)
         self.assertEqual(Document, cmp_rsp._document_class)
         self.mock_client.search.assert_called_once_with(
-            index="my-store",
+            index=self.store.get_index_name(),
             body={},
             size=10000,
         )
@@ -21,7 +21,7 @@ class TestSearch(StoreTestCase):
         self.assertEqual(self.mock_client.search.return_value, cmp_rsp.data)
         self.assertEqual(Document, cmp_rsp._document_class)
         self.mock_client.search.assert_called_once_with(
-            index="my-store",
+            index=self.store.get_index_name(),
             body={},
             size=10,
         )
@@ -33,7 +33,7 @@ class TestSearch(StoreTestCase):
         self.assertEqual(self.mock_client.search.return_value, cmp_rsp.data)
         self.assertEqual(Document, cmp_rsp._document_class)
         self.mock_client.search.assert_called_once_with(
-            index="my-store",
+            index=self.store.get_index_name(),
             body={
                 "query": {"my": "query"},
             },
@@ -47,7 +47,7 @@ class TestSearch(StoreTestCase):
         self.assertEqual(self.mock_client.search.return_value, cmp_rsp.data)
         self.assertEqual(Document, cmp_rsp._document_class)
         self.mock_client.search.assert_called_once_with(
-            index="my-store",
+            index=self.store.get_index_name(),
             body={
                 "sort": [{"my": "sort"}],
             },

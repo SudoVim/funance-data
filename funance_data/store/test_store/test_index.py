@@ -10,7 +10,7 @@ class TestIndex(StoreTestCase):
         self.assertEqual(IndexResponse, type(cmp_rsp))
         self.assertEqual(self.mock_client.index.return_value, cmp_rsp.data)
         self.mock_client.index.assert_called_once_with(
-            index="my-store",
+            index=self.store.get_index_name(),
             id="my-id",
             document={"_source": {"my-key": "my-val"}},
         )

@@ -11,7 +11,7 @@ class TickerInfo(Document):
     Information about a ticker symbol.
     """
 
-    date: datetime.datetime
+    date: datetime.date
     symbol: str
     long_name: str
     short_name: str
@@ -20,7 +20,7 @@ class TickerInfo(Document):
     def __init__(self, data: Mapping[str, Any]) -> None:
         super().__init__(data)
 
-        self.date = datetime.datetime.strptime(data["date"], "%Y-%m-%d")
+        self.date = datetime.datetime.strptime(data["date"], "%Y-%m-%d").date()
         self.symbol = data["symbol"]
 
         doc = data.get("doc", {})
@@ -90,7 +90,7 @@ class TickerInfoStore(Store[TickerInfo]):
         Query the ticker information for today if it doesn't exist. ``force``
         overrides this and always queries the latest.
         """
-        today = datetime.datetime.now(datetime.timezone.utc)
+        today = datetime.date.today()
 
         latest = self.latest()
         if latest is not None and not force:

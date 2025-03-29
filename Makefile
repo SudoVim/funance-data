@@ -20,3 +20,6 @@ mypy:
 .PHONY: test
 test:
 	pipenv run pytest
+
+.PHONY: ci
+ci: format mypy test

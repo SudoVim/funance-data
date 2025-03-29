@@ -91,20 +91,9 @@ class TickerDailyStore(Store[TickerDaily]):
 
         latest = self.latest()
         if latest is not None and not force:
-            now_date = datetime.datetime.now(datetime.timezone.utc)
-            latest_delta = now_date - latest.date
-
-            # We already have today's data. Just continue.
-            if latest_delta < datetime.timedelta(days=1):
-                return
-
-            # The last datapoint is from a Friday, and it's currently the
-            # weekend. In this case, we also don't have any new datapoints to
-            # gather.
-            if latest.date.weekday() == 4 and now_date.weekday() in [5, 6]:
-                return
-
-            from_date = latest.date + datetime.timedelta(days=1)
+            # Always update the latest date in case there's newer data that we
+            # did not get.
+            from_date = latest.date
 
         df = self._ticker.history(start=from_date, end=today)
 
